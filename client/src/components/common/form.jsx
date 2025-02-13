@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger } from '../ui/select';
 import { Textarea } from '../ui/textarea';
 import { Button } from '../ui/button';
 
-function CommonForm({formControls, formData, setData, onSubmit, buttonText }) {
+const CommonForm = ({formControls, formData, setData, onSubmit, buttonText }) => {
 
     function renderInputByComponentType(getControlItem){
         let element = null;
@@ -47,8 +47,8 @@ function CommonForm({formControls, formData, setData, onSubmit, buttonText }) {
                         <SelectContent>
                             {
                                 getControlItem.options &&  
-                                getControlItem.optionsl.ength > 0 ?
-                                getControlItem.option.map(optionItem=> <SelectItem key={optionItem.id} value={optionItem.id}>
+                                getControlItem.options.length > 0 ?
+                                getControlItem.options.map(optionItem=> <SelectItem key={optionItem.id} value={optionItem.id}>
                                     {optionItem.label}
                                 </SelectItem>) : null
                             }
@@ -81,7 +81,7 @@ function CommonForm({formControls, formData, setData, onSubmit, buttonText }) {
                     name={getControlItem.name}
                     placeholder={getControlItem.placeholder}
                     id={getControlItem.name}
-                    type={getControlItem.type}
+                    type="text"
                     onChange={(event) =>
                         setData({
                             ...formData,
@@ -109,7 +109,7 @@ function CommonForm({formControls, formData, setData, onSubmit, buttonText }) {
         )
     }
         </div>
-        <Button type="submit" className='mt-2 w-full '>{buttonText || 'Submit'}</Button>
+        <Button type="submit" className='mt-2 bg-black text-white cursor-pointer w-full '>{buttonText || 'Submit'}</Button>
    </form>
   )
 }
