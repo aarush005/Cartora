@@ -24,10 +24,17 @@ function AuthRegister(){
     function onSubmit(event) {
         event.preventDefault();
         dispatch(registerUser(formData)).then((data) => {
+            if(data?.payload?.success){
             toast({
                title: data?.payload?.message,
             })
-           if(data?.payload?.success) navigate("/auth/login");
+            navigate("/auth/login");
+        } else {
+            toast({
+                title: data?.payload?.message, 
+                variant: "destructive",
+             })
+        }
         });
     }
 
