@@ -35,6 +35,7 @@ function AuthRegister(){
                 variant: "destructive",
              })
         }
+        // console.log(data)
         });
     }
 

@@ -1,10 +1,16 @@
-import React, { useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { Label } from '../ui/label'
 import { Input } from '../ui/input'
 import { FileIcon, UploadCloudIcon, XIcon } from 'lucide-react'
 import { Button } from '../ui/button'
+import axios from 'axios'
 
-const ProductImageUpload = ({imageFile, setImageFile, uploadedImageUrl, setUploadedImageUrl}) => {
+const ProductImageUpload = ({imageFile, 
+    setImageFile, 
+    uploadedImageUrl, 
+    setUploadedImageUrl,
+    setImageLoadingState
+}) => {
     
 
     const inputRef = useRef(null)
@@ -16,6 +22,25 @@ const ProductImageUpload = ({imageFile, setImageFile, uploadedImageUrl, setUploa
         if(selectedFile) setImageFile(selectedFile);
 
     }
+
+    console.log(imageFile)
+
+    async function uploadedImageToCloudinary(){
+        setImageLoadingState(true)
+        const data = new FormData();
+        data.append('my-file', imageFile)
+        const response = await axios.post('http://localhost:5000/api/admin/products/upload-image', data)
+
+        console.log(response, "response")
+        if(response.data?.success){
+            setUploadedImageUrl(response.data.result.url);
+            setImageLoadingState(false)
+        }
+    }
+
+    useEffect(()=>{
+        if(imageFile !==null) uploadedImageToCloudinary()
+    }, [imageFile])
 
     function handleDragOver(event){
         event.preventDefault()

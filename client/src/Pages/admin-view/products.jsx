@@ -24,7 +24,7 @@ const AdminProducts = () => {
   const [formData, setFormData] = useState(initialFormData)
   const [imageFile, setImageFile] = useState(null)
   const [uploadedImageUrl, setUploadedImageUrl] = useState('')
-
+  const [imageLoadingState, setImageLoadingState] = useState(false)
   return (
     <>
     <div className="mb-5 w-full flex justify-end">
@@ -39,7 +39,13 @@ const AdminProducts = () => {
         <SheetHeader>
           <SheetTitle>Add new Product</SheetTitle>
         </SheetHeader>
-        <ProductImageUpload imageFile={imageFile} setImageFile={setImageFile} uploadedImageUrl={uploadedImageUrl} setUploadedImageUrl={setUploadedImageUrl} />
+        <ProductImageUpload 
+        imageFile={imageFile} 
+        setImageFile={setImageFile} 
+        uploadedImageUrl={uploadedImageUrl} 
+        setUploadedImageUrl={setUploadedImageUrl} 
+        setImageLoadingState={setImageLoadingState}
+        />
         <div className="py-6">
           <CommonForm onSubmit={onSubmit} formData={formData} setFormData={setFormData} buttonText='Add'
           formControls={addProductFormElements}/>
