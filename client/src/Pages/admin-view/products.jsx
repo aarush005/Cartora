@@ -8,6 +8,7 @@ import { addNewProduct, fetchAllProducts } from '@/store/admin/products-slice'
 import { Title } from '@radix-ui/react-toast'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import AdminProductsTile from './product-tile'
 
 const initialFormData ={
   image : null,
@@ -69,6 +70,10 @@ useEffect(()=>{
       <Button onClick={()=>setOpenCreateProductsDialog(true)}>Add new Product</Button>
     </div>
     <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
+      {
+        productList && productList.length > 0 ?
+        productList.map(productItem => <AdminProductsTile product={productItem }/>) : null
+      }
     <Sheet open={openCreateProductsDialog}
     onOpenChange={() =>{
       setOpenCreateProductsDialog(false)
