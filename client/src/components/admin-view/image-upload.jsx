@@ -1,91 +1,132 @@
-import React, { useEffect, useRef } from 'react'
-import { Label } from '../ui/label'
-import { Input } from '../ui/input'
-import { FileIcon, UploadCloudIcon, XIcon } from 'lucide-react'
-import { Button } from '../ui/button'
-import axios from 'axios'
+import React, { useRef, useState } from "react";
+import axios from "axios";
 
-const ProductImageUpload = ({imageFile, 
-    setImageFile, 
-    uploadedImageUrl, 
-    setUploadedImageUrl,
-    setImageLoadingState
-}) => {
-    
+const ProductImageUpload = ({ setUploadedImageUrl }) => {
 
-    const inputRef = useRef(null)
+  const inputRef = useRef(null);
 
-    function handleImageFileChange(event){
-        console.log(event.target.files)
+  const [imageFile, setImageFile] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
-        const selectedFile = event.target.files?.[0];
-        if(selectedFile) setImageFile(selectedFile);
+  function handleFile(file) {
+    if (!file) return;
 
+    setImageFile(file);
+
+    const previewUrl = URL.createObjectURL(file);
+    setPreview(previewUrl);
+
+    uploadImage(file);
+  }
+
+  function handleChange(e) {
+    const file = e.target.files[0];
+    handleFile(file);
+  }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    handleFile(file);
+  }
+
+  function handleDragOver(e) {
+    e.preventDefault();
+  }
+
+  async function uploadImage(file) {
+
+    const data = new FormData();
+    data.append("my-file", file);
+
+    const response = await axios.post(
+      "http://localhost:5000/api/admin/products/upload-image",
+      data,
+      {
+        onUploadProgress: (progressEvent) => {
+          const percent = Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total
+          );
+          setUploadProgress(percent);
+        },
+      }
+    );
+
+    if (response.data?.success) {
+      setUploadedImageUrl(response.data.imageUrl);
     }
+  }
 
-    console.log(imageFile)
+  function removeImage() {
+    setImageFile(null);
+    setPreview(null);
+    setUploadProgress(0);
 
-    async function uploadedImageToCloudinary(){
-        setImageLoadingState(true)
-        const data = new FormData();
-        data.append('my-file', imageFile)
-        const response = await axios.post('http://localhost:5000/api/admin/products/upload-image', data)
-
-        console.log(response, "response")
-        if(response.data?.success){
-            setUploadedImageUrl(response.data.result.url);
-            setImageLoadingState(false)
-        }
+    if (inputRef.current) {
+      inputRef.current.value = "";
     }
+  }
 
-    useEffect(()=>{
-        if(imageFile !==null) uploadedImageToCloudinary()
-    }, [imageFile])
-
-    function handleDragOver(event){
-        event.preventDefault()
-    }
-
-    function handleDrop () {
-        event.preventDefault()
-        const droppedFile = event.dataTransfer.files?.[0]
-        if(droppedFile) setImageFile(droppedFile);
-    }
-
-    function handleRemoveImage(){
-        setImageFile(null)
-        if(inputRef.current){
-            inputRef.current.value = ''
-        }
-    }
- 
   return (
-    <div className='w-full max-w-md mx-auto'>
-        <Label className="text-lg font-semibold mb-2 block">
-            Upload Image
-        </Label>
-        <div onDragOver={handleDragOver} onDrop={handleDrop} className="border-2 border-dashed rounded-lg p-4 mt-4">
-             <Input id="image-upload" type="file" className="hidden" ref={inputRef} onChange={handleImageFileChange}/>
-             {
-                !imageFile ? 
-                <Label htmlFor="image-upload" className="flex flex-col items-center h-32 cursor-pointer">
-                    <UploadCloudIcon className='w-10 h-10 mt-7'/>
-                    <span>Drag & Drop Or Click to Upload Image</span>
-                </Label> : (
-                <div className='flex items-center justify-between '>
-                    <div className="flex items-center">
-                        <FileIcon className='w-8 text-primary mr-2 h-8'/>
-                    </div>
-                    <p className='text-sm font-medium'> {imageFile.name}</p>
-                    <Button size="icon" className="text-gray-500 hover:text-foreground" onClick={handleRemoveImage}>
-                        <XIcon className='w-4 h-4'/> 
-                        <span className='sr-only'>Remove File</span>
-                    </Button>
-                </div>  )
-             }
-        </div>
-    </div>
-  )
-}
+    <div className="w-full max-w-md mx-auto">
 
-export default  ProductImageUpload 
+      <input
+        type="file"
+        ref={inputRef}
+        accept="image/*"
+        className="hidden"
+        onChange={handleChange}
+      />
+
+      {!preview ? (
+        <div
+          onClick={() => inputRef.current.click()}
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          className="border-2 border-dashed p-6 rounded-lg text-center cursor-pointer"
+        >
+          <p className="font-medium">Drag & Drop Image</p>
+          <p className="text-sm text-gray-500">
+            or click to upload
+          </p>
+        </div>
+      ) : (
+        <div className="border rounded-lg p-3">
+
+          <img
+            src={preview}
+            alt="preview"
+            className="w-full h-40 object-cover rounded-md"
+          />
+
+          {uploadProgress < 100 && (
+            <div className="w-full bg-gray-200 h-2 rounded mt-3">
+              <div
+                className="bg-black h-2 rounded"
+                style={{ width: `${uploadProgress}%` }}
+              />
+            </div>
+          )}
+
+          <div className="flex justify-between items-center mt-2">
+            <p className="text-sm truncate">
+              {imageFile?.name}
+            </p>
+
+            <button
+              onClick={removeImage}
+              className="bg-black text-white px-2 py-1 rounded"
+            >
+              Remove
+            </button>
+          </div>
+
+        </div>
+      )}
+
+    </div>
+  );
+};
+
+export default ProductImageUpload;

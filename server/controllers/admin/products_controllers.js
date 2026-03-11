@@ -12,18 +12,19 @@ const handleImageUpload = async (req, res) => {
 
         res.json({
             success: true,
-            result,
+            imageUrl: result.secure_url,
         })
 
     } catch (error) {
-        console.log(error);
+        console.log("Cloudinary error:", error);
         res.json({
             success: false,
             message: "Error Occured"
         })
     }
-}
+    console.log(req.file);
 
+}
 
 
 

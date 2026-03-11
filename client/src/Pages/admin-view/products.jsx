@@ -45,6 +45,7 @@ const AdminProducts = () => {
         uploadedImageUrl={uploadedImageUrl} 
         setUploadedImageUrl={setUploadedImageUrl} 
         setImageLoadingState={setImageLoadingState}
+        imageLoadingState = {imageLoadingState}
         />
         <div className="py-6">
           <CommonForm onSubmit={onSubmit} formData={formData} setFormData={setFormData} buttonText='Add'
