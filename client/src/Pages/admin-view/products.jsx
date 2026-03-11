@@ -3,7 +3,11 @@ import CommonForm from '@/components/common/form'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { addProductFormElements } from '@/config'
-import React, { useState } from 'react'
+import { useToast } from '@/hooks/use-toast'
+import { addNewProduct, fetchAllProducts } from '@/store/admin/products-slice'
+import { Title } from '@radix-ui/react-toast'
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
 const initialFormData ={
   image : null,
@@ -15,9 +19,7 @@ const initialFormData ={
   salePrice : '',
   totalStock : '',
 }
-function onSubmit (){
 
-}
 
 const AdminProducts = () => { 
   const [openCreateProductsDialog, setOpenCreateProductsDialog] = useState(false)
@@ -25,6 +27,42 @@ const AdminProducts = () => {
   const [imageFile, setImageFile] = useState(null)
   const [uploadedImageUrl, setUploadedImageUrl] = useState('')
   const [imageLoadingState, setImageLoadingState] = useState(false)
+  const dispatch = useDispatch()
+  const {productList} = useSelector(state=>state.adminProducts)
+  const {toast} = useToast();
+
+function onSubmit (event){
+    event.preventDefault();
+
+}
+
+function onSubmit(event){
+  event.preventDefault();
+  dispatch(addNewProduct({
+    ...formData,
+    image : uploadedImageUrl
+  })
+).then((data) =>{
+  if(data?.payload?.success){
+    dispatch(fetchAllProducts())
+    setOpenCreateProductsDialog(false)
+    setImageFile(null);
+    setFormData(initialFormData)
+    toast({
+      title : 'Product add successfully'
+    })
+  }
+})
+}
+
+useEffect(()=>{
+  dispatch(fetchAllProducts())
+}, [dispatch])
+
+
+  console.log(productList, uploadedImageUrl, "productList ");
+
+
   return (
     <>
     <div className="mb-5 w-full flex justify-end">

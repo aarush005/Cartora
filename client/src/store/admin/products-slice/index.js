@@ -9,7 +9,7 @@ const initialState = {
 
 export const addNewProduct = createAsyncThunk('/product/addnewproduct',
  async (formData) => {
-        const result = await axios.post('http://localhost:5000/api/admin/product/add', formData,{
+        const result = await axios.post('http://localhost:5000/api/admin/products/add', formData,{
         headers: {
             'Content-Type' : 'application/json'
         },
@@ -19,7 +19,7 @@ export const addNewProduct = createAsyncThunk('/product/addnewproduct',
     })
 
 
-export const fetchAllProduct = createAsyncThunk('/product/fetchAllProducts',
+export const fetchAllProducts = createAsyncThunk('/product/fetchAllProducts',
  async () => {
         const result = await axios.get('http://localhost:5000/api/admin/products/get',
         )
@@ -30,7 +30,7 @@ export const fetchAllProduct = createAsyncThunk('/product/fetchAllProducts',
 
 export const editProduct = createAsyncThunk('/product/editProduct',
  async ({id, formData}) => {
-        const result = await axios.put('http://localhost:5000/api/admin/product/edit/${id}', formData,{
+        const result = await axios.put(`http://localhost:5000/api/admin/products/edit/${id}`, formData,{
         headers: {
             'Content-Type' : 'application/json'
         },
@@ -43,7 +43,7 @@ export const editProduct = createAsyncThunk('/product/editProduct',
 
     export const deleteProduct = createAsyncThunk('/product/deleteProduct',
  async (id) => {
-        const result = await axios.delete('http://localhost:5000/api/admin/products/delete/${id}',
+        const result = await axios.delete(`http://localhost:5000/api/admin/products/delete/${id}`,
         )
         return result?.data;
     })
@@ -56,14 +56,14 @@ const AdminProductSlice = createSlice({
    initialState,
    reducers: {},
    extraReducers: (builder) => {
-    builder.addCase(fetchAllProduct.pending, (state) =>{
+    builder.addCase(fetchAllProducts.pending, (state) =>{
         state.isLoading = true
-    }).addCase(fetchAllProduct.fulfilled, (state,action) =>{
+    }).addCase(fetchAllProducts.fulfilled, (state,action) =>{
         console.log(action.payload);
-
+  
         state.isLoading=false
-        state.productList = action.payload
-    }).addCase(fetchAllProduct.rejected, (state,action) =>{
+        state.productList = action.payload.data
+    }).addCase(fetchAllProducts.rejected, (state,action) =>{
         console.log(action.payload);
 
         state.isLoading =false

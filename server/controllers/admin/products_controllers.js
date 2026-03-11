@@ -7,7 +7,7 @@ const handleImageUpload = async (req, res) => {
     try {
 
         const b64 = Buffer.from(req.file.buffer).toString('base64');
-        const url = "data: " + req.file.mimetype + ";base64," + b64;
+        const url = "data:" + req.file.mimetype + ";base64," + b64;
         const result = await ImageUploadUtil(url);
 
         res.json({
@@ -21,8 +21,8 @@ const handleImageUpload = async (req, res) => {
             success: false,
             message: "Error Occured"
         })
+        console.log(req.file);
     }
-    console.log(req.file);
 
 }
 
@@ -47,8 +47,8 @@ const addProduct = async (req, res) => {
 
         await newlyCreatedProduct.save();
         res.status(201).json({
-            success: false,
-            message: "Error occurred"
+            success: true,
+            data: newlyCreatedProduct,
         });
 
 
@@ -67,7 +67,7 @@ const addProduct = async (req, res) => {
 const fetchAllProducts = async (req, res) => {
     try {
 
-        const listOfProducts = await Product.find({});
+        const listOfProducts = await Products.find({});
         res.status(200).json({
             success: true,
             data: listOfProducts,
@@ -92,7 +92,7 @@ const editProduct = async (req, res) => {
         const { id } = req.params;
         const { image, title, description, category, brand, price, salePrice, totalStock } = req.body;
 
-        const findProduct = await Product.findById(id);
+        const findProduct = await Products.findById(id);
         if (!findProduct)
             return res.status(404).json({
                 success: false,
@@ -103,7 +103,7 @@ const editProduct = async (req, res) => {
         findProduct.description = description || findProduct.description
         findProduct.category = category || findProduct.category
         findProduct.brand = brand || findProduct.brand
-        findProduct.price = price || findProduct.price
+        findProduct.price = price ?? findProduct.price
         findProduct.salePrice = salePrice || findProduct.salePrice
         findProduct.totalStock = totalStock || findProduct.totalStock
         findProduct.image = image || findProduct.image
@@ -133,7 +133,7 @@ const deleteProduct = async (req, res) => {
     try {
 
         const { id } = req.params
-        const product = await Product.findByIDAndUpdate(id);
+        const product = await Products.findByIdAndDelete(id);
 
         if (!product)
             return res.status(404).json({
@@ -141,10 +141,10 @@ const deleteProduct = async (req, res) => {
                 message: "Product not found"
             })
 
-            res.status(200).json({
-                success: true,
-                message: 'Product delete successfully'
-            })
+        res.status(200).json({
+            success: true,
+            message: 'Product delete successfully'
+        })
 
     } catch (e) {
         console.log(e);
