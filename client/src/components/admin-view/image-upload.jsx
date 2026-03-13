@@ -1,13 +1,21 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 
-const ProductImageUpload = ({ setUploadedImageUrl }) => {
+const ProductImageUpload = ({ setUploadedImageUrl, isEditMode }) => {
 
   const inputRef = useRef(null);
+
+  console.log(isEditMode, 'isEditMode')
 
   const [imageFile, setImageFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
+
+  useEffect(() => {
+    if (isEditMode && setUploadedImageUrl) {
+      setPreview(setUploadedImageUrl);
+    }
+  }, [isEditMode, setUploadedImageUrl]);
 
   function handleFile(file) {
     if (!file) return;
@@ -70,13 +78,13 @@ const ProductImageUpload = ({ setUploadedImageUrl }) => {
 
   return (
     <div className="w-full max-w-md mx-auto">
-
       <input
         type="file"
         ref={inputRef}
         accept="image/*"
         className="hidden"
         onChange={handleChange}
+        disabled={isEditMode}
       />
 
       {!preview ? (
@@ -84,7 +92,7 @@ const ProductImageUpload = ({ setUploadedImageUrl }) => {
           onClick={() => inputRef.current.click()}
           onDrop={handleDrop}
           onDragOver={handleDragOver}
-          className="border-2 border-dashed p-6 rounded-lg text-center cursor-pointer"
+          className={`${isEditMode ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'} border-2 border-dashed p-6 rounded-lg text-center`}
         >
           <p className="font-medium">Drag & Drop Image</p>
           <p className="text-sm text-gray-500">

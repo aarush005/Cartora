@@ -28,8 +28,9 @@ const AdminProducts = () => {
   const [imageFile, setImageFile] = useState(null)
   const [uploadedImageUrl, setUploadedImageUrl] = useState('')
   const [imageLoadingState, setImageLoadingState] = useState(false)
-  const dispatch = useDispatch()
+  const [currentEditedId, setCurrentEditedId] = useState(null);
   const {productList} = useSelector(state=>state.adminProducts)
+  const dispatch = useDispatch()
   const {toast} = useToast();
 
 function onSubmit (event){
@@ -60,6 +61,7 @@ useEffect(()=>{
   dispatch(fetchAllProducts())
 }, [dispatch])
 
+console.log(formData, "productList")
 
   console.log(productList, uploadedImageUrl, "productList ");
 
@@ -67,31 +69,49 @@ useEffect(()=>{
   return (
     <>
     <div className="mb-5 w-full flex justify-end">
-      <Button onClick={()=>setOpenCreateProductsDialog(true)}>Add new Product</Button>
+      <Button 
+      onClick={()=>setOpenCreateProductsDialog(true)
+      }> Add new Product
+      </Button>
     </div>
     <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
-      {
+      { 
         productList && productList.length > 0 ?
-        productList.map(productItem => <AdminProductsTile product={productItem }/>) : null
-      }
+        productList.map(productItem => (
+        <AdminProductsTile 
+        key={productItem._id}
+          setFormData={setFormData}
+          setCurrentEditedId={setCurrentEditedId}
+          setOpenCreateProductsDialog={setOpenCreateProductsDialog} 
+          product={productItem }/>)) 
+        : null }
     <Sheet open={openCreateProductsDialog}
     onOpenChange={() =>{
       setOpenCreateProductsDialog(false)
+      setCurrentEditedId(null)
+      setFormData(initialFormData)
     }}>
       <SheetContent side="right" className=" overflow-auto">
         <SheetHeader>
-          <SheetTitle>Add new Product</SheetTitle>
+          <SheetTitle>
+            {
+        currentEditedId !== null ? 
+        "Edit Product" : 'Add new Product'
+      }
+
+          </SheetTitle>
         </SheetHeader>
-        <ProductImageUpload 
+        <ProductImageUpload  
         imageFile={imageFile} 
         setImageFile={setImageFile} 
         uploadedImageUrl={uploadedImageUrl} 
         setUploadedImageUrl={setUploadedImageUrl} 
         setImageLoadingState={setImageLoadingState}
         imageLoadingState = {imageLoadingState}
+        isEditMode={currentEditedId !== null}
         />
         <div className="py-6">
-          <CommonForm onSubmit={onSubmit} formData={formData} setFormData={setFormData} buttonText='Add'
+          <CommonForm onSubmit={onSubmit} formData={formData} setFormData={setFormData} buttonText={currentEditedId !== null ? 'Edit' : 'Add'}
           formControls={addProductFormElements}/>
         </div>
       </SheetContent>
