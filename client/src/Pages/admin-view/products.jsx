@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { addProductFormElements } from '@/config'
 import { useToast } from '@/hooks/use-toast'
-import { addNewProduct, fetchAllProducts } from '@/store/admin/products-slice'
+import { addNewProduct, editProduct, fetchAllProducts } from '@/store/admin/products-slice'
 import { Title } from '@radix-ui/react-toast'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -39,7 +39,20 @@ function onSubmit (event){
 }
 
 function onSubmit(event){
-  event.preventDefault();
+event.preventDefault();
+  currentEditedId !== null ? 
+  dispatch(editProduct({
+    id:currentEditedId , formData
+  })).then((data) =>{
+
+    if (data?.payload?.success) {
+      dispatch(fetchAllProducts());
+      setFormData(initialFormData);
+      setOpenCreateProductsDialog(false);
+      setCurrentEditedId(null);
+    }
+  }) :
+  
   dispatch(addNewProduct({
     ...formData,
     image : uploadedImageUrl
@@ -55,6 +68,12 @@ function onSubmit(event){
     })
   }
 })
+}
+
+function isFormValid(){
+  return Object.keys(formData)
+  .map((key) =>formData[key] !== "")
+  .every((item) => item);
 }
 
 useEffect(()=>{
@@ -112,7 +131,9 @@ console.log(formData, "productList")
         />
         <div className="py-6">
           <CommonForm onSubmit={onSubmit} formData={formData} setFormData={setFormData} buttonText={currentEditedId !== null ? 'Edit' : 'Add'}
-          formControls={addProductFormElements}/>
+          formControls={addProductFormElements}
+          isBtnDisabled={!isFormValid()}
+          />
         </div>
       </SheetContent>
 
