@@ -54,11 +54,34 @@ export const loginUser = createAsyncThunk('/auth/login ',
     }
 );
 
+
+
+export const logoutUser = createAsyncThunk('/auth/logout ',
+    async (formData, { rejectWithValue }) => {
+        try {
+            console.log("Sending Registration Data:", formData);
+
+            const response = await axios.post('http://localhost:5000/api/auth/logout', {
+                withCredentials: true
+            });
+
+
+            console.log("Response Data:", response.data);
+            return response.data;  // This goes to `fulfilled`
+        } catch (error) {
+            console.error("Registration Error:", error.response?.data || error.message);
+            return rejectWithValue(error.response?.data || "An error occurred");
+        }
+    }
+);
+
+
+
 //Check Auth
 export const checkAuth = createAsyncThunk('/auth/checkauth',
     async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/auth/check-auth', {
+            const response = await axios.get('http://localhost:5000/api/auth/check-auth', {}, {
                 withCredentials: true,
                 headers: {
                     "Cache-Control": 'no-store, no-cache, must-revalidate, proxy-revalidate'
@@ -133,7 +156,12 @@ const authSlice = createSlice({
                 state.user = null;
                 state.isAuthenticated = false;
                 state.error = action.payload; // Store error message
-            });
+            })
+             .addCase(logoutUser.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.user = null;
+                state.isAuthenticated = false;
+            })
     }
 });
 
