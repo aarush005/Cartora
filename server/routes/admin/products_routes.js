@@ -22,7 +22,7 @@ router.post("/upload-image", upload.single("my-file"), (req, res, next) => {
   });
   router.post('/add', addProduct)
   router.post('/edit/:id', editProduct)
-  router.post('/delete/:id', deleteProduct)
+  router.delete('/delete/:id', deleteProduct)
   router.get('/get', fetchAllProducts)
   
 module.exports = router;

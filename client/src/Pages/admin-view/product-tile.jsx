@@ -6,6 +6,7 @@ function AdminProductsTile({
   setFormData,
   setOpenCreateProductsDialog,
   setCurrentEditedId,
+  handleDelete,
 }) {
   return (
     <Card className="w-full max-w-sm mx-auto">
@@ -51,7 +52,7 @@ function AdminProductsTile({
           >
             Edit
           </Button>
-          <Button className="cursor-pointer">Delete</Button>
+          <Button onClick={() => handleDelete(product?._id)} className="cursor-pointer">Delete</Button>
         </CardFooter>
       </div>
     </Card>

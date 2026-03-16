@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { addProductFormElements } from '@/config'
 import { useToast } from '@/hooks/use-toast'
-import { addNewProduct, editProduct, fetchAllProducts } from '@/store/admin/products-slice'
+import { addNewProduct, deleteProduct, editProduct, fetchAllProducts } from '@/store/admin/products-slice'
 import { Title } from '@radix-ui/react-toast'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -70,6 +70,16 @@ event.preventDefault();
 })
 }
 
+function handleDelete(getCurrentProductId){
+  console.log(getCurrentProductId);
+  dispatch(deleteProduct(getCurrentProductId)).then(data=>{
+    if (data?.payload?.success){
+      dispatch(fetchAllProducts());
+    }
+  })
+  
+}
+
 function isFormValid(){
   return Object.keys(formData)
   .map((key) =>formData[key] !== "")
@@ -102,7 +112,9 @@ console.log(formData, "productList")
           setFormData={setFormData}
           setCurrentEditedId={setCurrentEditedId}
           setOpenCreateProductsDialog={setOpenCreateProductsDialog} 
-          product={productItem }/>)) 
+          product={productItem}
+          handleDelete={handleDelete}
+          />)) 
         : null }
     <Sheet open={openCreateProductsDialog}
     onOpenChange={() =>{
