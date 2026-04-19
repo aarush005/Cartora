@@ -61,7 +61,7 @@ export const logoutUser = createAsyncThunk('/auth/logout ',
         try {
             console.log("Sending Registration Data:", formData);
 
-            const response = await axios.post('http://localhost:5000/api/auth/logout', {
+            const response = await axios.post('http://localhost:5000/api/auth/logout',{}, {
                 withCredentials: true
             });
 
@@ -79,21 +79,27 @@ export const logoutUser = createAsyncThunk('/auth/logout ',
 
 //Check Auth
 export const checkAuth = createAsyncThunk('/auth/checkauth',
-    async () => {
-        try {
-            const response = await axios.get('http://localhost:5000/api/auth/check-auth', {}, {
-                withCredentials: true,
-                headers: {
-                    "Cache-Control": 'no-store, no-cache, must-revalidate, proxy-revalidate'
-                }
-            });
-
-            return response.data; // This goes to `fulfilled`
-        } catch (error) {
-            // You can handle the error here, for example:
-            throw error; // This goes to `rejected`
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(
+        'http://localhost:5000/api/auth/check-auth',
+        {
+          withCredentials: true,
+          headers: {
+            "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate"
+          }
         }
+      );
+      return response.data;
+
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || "Auth check failed"
+      );
     }
+  }
+
+    
 );
 
 
@@ -163,6 +169,7 @@ const authSlice = createSlice({
                 state.isAuthenticated = false;
             })
     }
+
 });
 
 export const { setUser } = authSlice.actions;

@@ -20,7 +20,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { checkAuth } from './store/auth-slice'
 import { Skeleton } from "@/components/ui/skeleton"
 
-
+   
 function App() {
 
   const {user, isAuthenticated, isLoading } = useSelector(state=> state.auth)
@@ -63,17 +63,24 @@ function App() {
           </Route>
 
           {/* Same Goes with the Shopping Area */}
-          <Route path="/shop" element={
-             <CheckAuth isAuthenticated={isAuthenticated} user={user}>
-            <ShoppingLayout/>
-          </CheckAuth>
-          }>
-          <Route path='home' element={<ShoppingHome/>}/>
-          <Route path='listing' element={<ShoppingListing/>}/>
-          <Route path='checkout' element={<ShoppingCheckout/>}/>
-          <Route path='account' element={<ShoppingAccount/>}/>
-          </Route>
 
+           <Route
+          path="/shop"
+          element={
+            <CheckAuth isAuthenticated={isAuthenticated} user={user}>
+              <ShoppingLayout />
+            </CheckAuth>
+          }
+        >
+          <Route path="home" element={<ShoppingHome />} />
+          <Route path="listing" element={<ShoppingListing />} />
+          <Route path="checkout" element={<ShoppingCheckout />} />
+          {/* <Route path="account" element={<ShoppingAccount />} /> */}
+          {/* <Route path="paypal-return" element={<PaypalReturnPage />} /> */}
+          {/* <Route path="payment-success" element={<PaymentSuccessPage />} /> */}
+          {/* <Route path="search" element={<SearchProducts />} />  */}
+        </Route>
+           
           <Route path="/unauth-page" element={<UnAuthPage/>}/>
           <Route path="*" element={<NotFound/>}/>
 
