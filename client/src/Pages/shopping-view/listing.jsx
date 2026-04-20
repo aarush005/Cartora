@@ -4,11 +4,16 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenu
 import { sortOptions } from '@/config'
 import { ArrowUpDownIcon } from 'lucide-react'
 import React from 'react'
+import { useDispatch } from 'react-redux'
 
 const ShoppingListing = () => {
 
-  // Fetch list of Products
+  const dispatch = useDispatch()
 
+  // Fetch list of Products
+   useEffect(()=>{
+    dispatch(fetchAllProducts())
+   })
 
   return (
     <div className='grid grid-cols-1 md:grid-cols-[300px_1fr] gap-6 p-4 md-p-6'>
